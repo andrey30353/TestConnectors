@@ -4,15 +4,17 @@ using UnityEngine;
 
 public class Connectable : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public Connector Connector { get; private set; }
+
+    public Color ConnectorColor
     {
-        
+        get => Connector.Color;
+        set => Connector.Color = value;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Start()
     {
-        
+        Connector = GetComponentInChildren<Connector>();
     }
+
 }
