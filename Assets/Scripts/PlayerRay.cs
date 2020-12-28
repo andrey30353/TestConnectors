@@ -12,9 +12,6 @@ public class PlayerRay : MonoBehaviour
 
     private LineRenderer _connectionLine = default;
 
-    private Ray _ray;
-    private RaycastHit _hit;
-
     private void Start()
     {
         _main = GetComponent<Main>();
@@ -25,31 +22,14 @@ public class PlayerRay : MonoBehaviour
     private void Update()
     {
         // Перетаскивание с платформы ПКМ
-        if (Input.GetMouseButtonDown(1))
-        {
-            _ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(_ray, out _hit, 1000, selectableLayer))
-            {               
-                var connector = _hit.collider.GetComponent<Connector>();
-                if (connector != null)
-                {
-                    _movedConnector = connector;
-                }
-            }
-        }
-
-        if (Input.GetMouseButtonUp(1))
-        {
-            _movedConnector = null;
-        }
+        MoveConnector();
 
         // Создание связей ЛКМ
         if (Input.GetMouseButtonDown(0))
-        {           
-            _ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(_ray, out _hit, 1000, selectableLayer))
+        {
+            if (Raycast(out var hit))
             {
-                var connector = _hit.collider.GetComponent<Connector>();
+                var connector = hit.collider.GetComponent<Connector>();
                 if (connector != null)
                 {
                     if (_firstConnector == null)
@@ -75,11 +55,10 @@ public class PlayerRay : MonoBehaviour
 
         // Создание связей перетаскиванием ЛКМ
         if (Input.GetMouseButton(0))
-        {           
-            _ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(_ray, out _hit, 1000, selectableLayer))
+        {
+            if (Raycast(out var hit))
             {
-                var connector = _hit.collider.GetComponent<Connector>();
+                var connector = hit.collider.GetComponent<Connector>();
                 if (connector != null)
                 {
                     if (_firstConnector != null && _secondConnector == null && connector != _firstConnector)
@@ -98,6 +77,7 @@ public class PlayerRay : MonoBehaviour
                 }
             }
 
+            // показать линию от первого коннектора к курсору
             if (_firstConnector != null)
             {
                 var worldPosition = GetMousePositionInWorld(_firstConnector);
@@ -108,9 +88,8 @@ public class PlayerRay : MonoBehaviour
         }
 
         if (Input.GetMouseButtonUp(0))
-        {            
-            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out var hit, 1000, selectableLayer))
+        {
+            if (Raycast(out _))
             {
                 if (_firstConnector != null && _secondConnector != null)
                 {
@@ -122,6 +101,26 @@ public class PlayerRay : MonoBehaviour
             {
                 UnselectAll();
             }
+        }        
+    }
+
+    private void MoveConnector()
+    {
+        if (Input.GetMouseButtonDown(1))
+        {
+            if (Raycast(out var hit))
+            {
+                var connector = hit.collider.GetComponent<Connector>();
+                if (connector != null)
+                {
+                    _movedConnector = connector;
+                }
+            }
+        }
+
+        if (Input.GetMouseButtonUp(1))
+        {
+            _movedConnector = null;
         }
 
         // перемещение коннектора
@@ -132,10 +131,10 @@ public class PlayerRay : MonoBehaviour
         }
     }
 
-    private bool Raycast()
-    {
-        _ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        return Physics.Raycast(_ray, out _hit, 1000, selectableLayer);
+    private bool Raycast(out RaycastHit hit)
+    {       
+        var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        return Physics.Raycast(ray, out hit, 1000, selectableLayer);
     }
 
     private void HideLine()

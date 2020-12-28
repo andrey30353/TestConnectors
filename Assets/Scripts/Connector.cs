@@ -28,9 +28,10 @@ public class Connector : MonoBehaviour
 
     public bool CanConnectWith(Connector other)
     {
+        Assert.IsNotNull(other);
         if (_connections.Contains(other))
         {
-            //print("Already connected");
+            print("Already connected");
             return false;
         }
 
@@ -47,7 +48,7 @@ public class Connector : MonoBehaviour
     {
         transform.position = worldPosition;
         Assert.IsTrue(_connections.Count == _lines.Count);
-        print(_connections.Count);
+       
         for (int i = 0; i < _lines.Count; i++)
         {
             _lines[i].SetPosition(0, worldPosition);
