@@ -1,11 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 public class Connector : MonoBehaviour
 {
-    public float PositionY { get; private set; }
-       
+    public Vector3 PositionY { get; private set; }
+
+    private List<Connector> _connections;
+    private List<LineRenderer> _lines;
+
     public Color Color 
     { 
         get => _mr.material.color; 
@@ -16,7 +19,39 @@ public class Connector : MonoBehaviour
 
     private void Start()
     {
-        PositionY = transform.position.y;
+        PositionY = new Vector3(0, transform.position.y, 0);
+
         _mr = GetComponent<MeshRenderer>();
+        _connections = new List<Connector>();
+        _lines = new List<LineRenderer>();
+    }    
+
+    public bool CanConnectWith(Connector other)
+    {
+        if (_connections.Contains(other))
+        {
+            //print("Already connected");
+            return false;
+        }
+
+        return true;
+    }
+
+    public void AddConnection(Connector other, LineRenderer line)
+    {   
+        _connections.Add(other);
+        _lines.Add(line);
+    }
+
+    public void Move(Vector3 worldPosition)
+    {
+        transform.position = worldPosition;
+        Assert.IsTrue(_connections.Count == _lines.Count);
+        print(_connections.Count);
+        for (int i = 0; i < _lines.Count; i++)
+        {
+            _lines[i].SetPosition(0, worldPosition);
+            _lines[i].SetPosition(1, _connections[i].transform.position);
+        }      
     }
 }

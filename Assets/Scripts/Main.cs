@@ -6,6 +6,8 @@ using UnityEngine;
 public class Main : MonoBehaviour
 {
     [SerializeField] private Connectable _connectablePrefab = default;
+    [SerializeField] private LineRenderer _connectionPrefab = default;
+
     [SerializeField] private float _radius = 10;
     [SerializeField] private int _count = 10;
 
@@ -32,12 +34,14 @@ public class Main : MonoBehaviour
         }
     }
 
-    public void Select(Connector connector)
-    {
-        if (_selectedConnector != null)
-            ConnectWith(connector);
+    public void Select(Connector connector, bool onlyThis)
+    {       
 
-        _selectedConnector = connector;
+        if (onlyThis)
+        {
+            connector.Color = _selectedColor;
+            return;
+        }
 
         foreach (var connectable in _connectableList)
         {
@@ -48,15 +52,33 @@ public class Main : MonoBehaviour
         }
     }
 
-    private void ConnectWith(Connector connector)
+    public void Unselect(Connector connector)
     {
-        print("ConnectWith");
+        connector.Color = _readyToConnectColor;      
+    }   
+
+    public void CreateConnection(Connector connector1, Connector connector2)
+    {
+        if (!connector1.CanConnectWith(connector2))
+            return;
+
+        var line = CreateConnectionLine(connector1.transform.position, connector2.transform.position);        
+
+        connector1.AddConnection(connector2, line);
+        connector2.AddConnection(connector1, line);        
+    }
+
+    public LineRenderer CreateConnectionLine(Vector3 start, Vector3 end)
+    {
+        var line = Instantiate(_connectionPrefab, Vector3.zero, Quaternion.identity);
+        line.SetPositions(new Vector3[] { start, end });
+        line.transform.SetParent(transform);
+        return line;
     }
 
     public void UnselectAll()
     {
         _selectedConnector = null;
-
         ResetColor();
     }
 

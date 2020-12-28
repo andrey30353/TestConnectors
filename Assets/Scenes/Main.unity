@@ -326,8 +326,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _connectablePrefab: {fileID: -7881017648346657742, guid: 34741b90a6f20bd43b73f889865c454c,
     type: 3}
+  _connectionPrefab: {fileID: 6895435300003863024, guid: 012220f4bbacbbe4c95cdb39813b463c,
+    type: 3}
   _radius: 10
   _count: 10
+  _defaultColor: {r: 1, g: 1, b: 1, a: 1}
+  _selectedColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  _readyToConnectColor: {r: 0, g: 0, b: 1, a: 1}
 --- !u!4 &1288515605
 Transform:
   m_ObjectHideFlags: 0
